@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Routing\Registrar as Router;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 
 class UrlMatcherCommand extends Command
@@ -51,8 +52,10 @@ class UrlMatcherCommand extends Command
         try {
             $route = $router->getRoutes()->match($request);
         } catch (NotFoundHttpException $th) {
-            $this->error('No route matches');
-            $this->error('A "'.\strtoupper($method).'" request to "'.$url.'" will throw a "HTTP 404 Not Found"');
+            $this->error('No route matches, a '.\strtoupper($method).' request to "'.$url.'" will throw a "HTTP 404 Not Found"');
+            return;
+        } catch (MethodNotAllowedHttpException $e) {
+            $this->error($e->getMessage());
             return;
         }
 
