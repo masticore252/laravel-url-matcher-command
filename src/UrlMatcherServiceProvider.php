@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 class UrlMatcherServiceProvider extends ServiceProvider
 {
 
-    public function boot(Router $router)
+    public function boot()
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
