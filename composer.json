@@ -10,13 +10,17 @@
             "email": "masticore252@gmail.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/masticore252/laravel-url-matcher-command/issues",
+        "source": "https://github.com/masticore252/laravel-url-matcher-command"
+    },
     "autoload": {
         "psr-4": {
             "Masticore\\LaravelUrlTestMatcher\\": "src/"
         }
     },
     "require": {
-        "php": "^7.2",
+        "php": ">=7.0",
         "illuminate/http": "^7.0|^6.0",
         "illuminate/console": "^7.0|^6.0",
         "illuminate/routing": "^7.0|^6.0",
@@ -28,7 +32,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Masticore\\LaravelUrlTestMatcher\\Providers\\UrlMatcherServiceProvider"
+                "Masticore\\LaravelUrlTestMatcher\\UrlMatcherServiceProvider"
             ]
         }
     }
