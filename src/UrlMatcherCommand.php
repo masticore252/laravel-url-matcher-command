@@ -1,6 +1,8 @@
 <?php
 namespace Masticore\LaravelUrlTestMatcher;
 
+use Closure;
+use ReflectionFunction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -19,7 +21,7 @@ class UrlMatcherCommand extends Command
      */
     protected $signature = 'route:match
                             {url : the url to match}
-                            {--m|method=get : the method used to match the url}
+                            {method=get : the method used to match the url}
                             {--s|style=default : default style for the table, can be compact, borderless, box or box-double}';
 
     /**
@@ -38,7 +40,7 @@ class UrlMatcherCommand extends Command
     public function handle(Router $router)
     {
         $tableStyle = $this->option('style');
-        $method = $this->option('method');
+        $method = $this->argument('method');
         $url = $this->argument('url');
 
         $request = $this->buildRequestObject(
@@ -54,36 +56,20 @@ class UrlMatcherCommand extends Command
             return;
         }
 
-        $data = [];
-        $data['uri'] = $route->uri;
-        $data['methods'] = $route->methods;
-        $data['action']['controller'] = $route->action['controller'];
-        $data['action']['middleware'] = $route->action['middleware'];
-        $data['action']['where'] = $route->action['where'];
-        $data['action']['uses'] = $route->action['uses'];
-        $data['action']['prefix'] = $route->action['prefix'];
-        $data['action']['namespace'] = $route->action['namespace'];
-        $data['parameters'] = $route->parameters;
-        $data['originalParameters'] = $route->originalParameters;
-        $data['parameterNames'] = $route->parameterNames;
-        $data['bindingFields'] = $route->bindingFields;
-        $data['isFallback'] = $route->isFallback;
-
         $headers = ['Property','Value'];
         $rows = [
             ['Uri', $route->uri],
+            ['Prefix', $route->action['prefix'] ?? 'null'],
             ['Methods', implode(', ',$route->methods)],
-            ['Controller', $route->action['controller'] ],
-            ['Middleware', implode(', ',$route->action['middleware']) ],
-            ['Where', implode(', ', $route->action['where']) ],
-            ['Uses', $route->action['uses'] ],
-            ['Prefix', $route->action['prefix'] ],
-            ['Namespace', $route->action['namespace'] ],
+            ...$this->getHandler($route),
+            ['Middleware', implode(', ',$route->action['middleware']) ?? 'null'],
+            ['Namespace', $route->action['namespace'] ?? 'null'],
+            ['Parameter Names', implode(', ', $route->parameterNames) ],
             ['Parameters', implode(', ', $route->parameters) ],
             ['Original Parameters', implode(', ', $route->originalParameters ?? []) ],
-            ['Parameter Names', implode(', ', $route->parameterNames) ],
             ['Binding Fields', implode(', ', $route->bindingFields ?? []) ],
-            ['Fallback', $route->isFallback ? 'true' : 'false' ],
+            ['Is Fallback', $route->isFallback ? 'true' : 'false' ],
+            ['Where', implode(', ', $route->action['where']) ?? 'null'],
         ];
 
         $this->info('A '.$method.' request to "'.$url.'" matches the following route:');
@@ -118,5 +104,22 @@ class UrlMatcherCommand extends Command
         }
 
         return trim(url($uri), '/');
+    }
+
+    protected function getHandler($route)
+    {
+
+        if ($route->action['uses'] instanceof Closure) {
+            $reflector = new ReflectionFunction($route->action['uses']);
+            return [
+                ['Controller' , 'Closure at ' . $reflector->getFileName() . ':' . $reflector->getStartLine()],
+            ];
+        }
+
+
+        return [
+            ['Controller' , $route->action['controller']],
+        ];
+
     }
 }
