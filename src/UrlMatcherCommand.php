@@ -5,8 +5,8 @@ use Closure;
 use ReflectionFunction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Router;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Routing\Registrar as Router;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
