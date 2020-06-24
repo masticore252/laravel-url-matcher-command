@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
-
 class UrlMatcherCommand extends Command
 {
 
@@ -60,12 +59,11 @@ class UrlMatcherCommand extends Command
         }
 
         $headers = ['Property','Value'];
-        $rows = [
+        $rows = array_merge([
             ['Uri', $route->uri],
             ['Prefix', $route->action['prefix'] ?? 'null'],
-            ['Methods', implode(', ',$route->methods)],
-            ...$this->getHandler($route),
-            ['Middleware', implode(', ',$route->action['middleware']) ?? 'null'],
+            ['Methods', implode(', ', $route->methods)],
+            ['Middleware', implode(', ', $route->action['middleware']) ?? 'null'],
             ['Namespace', $route->action['namespace'] ?? 'null'],
             ['Parameter Names', implode(', ', $route->parameterNames) ],
             ['Parameters', implode(', ', $route->parameters) ],
@@ -73,7 +71,9 @@ class UrlMatcherCommand extends Command
             ['Binding Fields', implode(', ', $route->bindingFields ?? []) ],
             ['Is Fallback', $route->isFallback ? 'true' : 'false' ],
             ['Where', implode(', ', $route->action['where']) ?? 'null'],
-        ];
+        ], $this->getHandler($route));
+
+        ksort($rows);
 
         $this->info('A '.$method.' request to "'.$url.'" matches the following route:');
         $this->table($headers, $rows, $tableStyle);
@@ -119,10 +119,8 @@ class UrlMatcherCommand extends Command
             ];
         }
 
-
         return [
             ['Controller' , $route->action['controller']],
         ];
-
     }
 }
