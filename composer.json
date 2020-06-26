@@ -1,6 +1,6 @@
 {
     "name": "masticore/laravel-url-matcher-command",
-    "description": "A command to get infomration about the route matched against an arbitrary url string",
+    "description": "A command to get information about the route matched against an arbitrary url string",
     "type": "library",
     "license": "BSD-3-Clause",
     "version": "0.1.1",
